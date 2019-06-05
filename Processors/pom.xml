@@ -43,7 +43,7 @@
         <module>nifi-google-cloud</module>
         <module>nifi-tensorflow</module>
         <module>nifi-image</module>
-        <module>nifi-hdfs</module>
+        <!--<module>nifi-hdfs</module>-->
         <module>nifi-mock</module>
   </modules>
 
