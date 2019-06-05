@@ -17,25 +17,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.jdye64</groupId>
-        <artifactId>nifi-barcode</artifactId>
+        <groupId>org.apache.nifi</groupId>
+        <artifactId>nifi-nar-bundles</artifactId>
         <version>1.9.2</version>
     </parent>
 
-    <artifactId>nifi-barcode-nar</artifactId>
+    <groupId>com.github.jdye64</groupId>
+    <artifactId>nifi-mock</artifactId>
     <version>1.9.2</version>
-    <packaging>nar</packaging>
-    <properties>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-        <source.skip>true</source.skip>
-    </properties>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.github.jdye64</groupId>
-            <artifactId>nifi-barcode-processors</artifactId>
-            <version>${nifi.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>nifi-mock-processors</module>
+        <module>nifi-mock-nar</module>
+    </modules>
 
 </project>
