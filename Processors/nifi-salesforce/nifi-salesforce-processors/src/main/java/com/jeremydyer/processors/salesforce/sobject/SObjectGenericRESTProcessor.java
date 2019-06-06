@@ -44,8 +44,8 @@ public class SObjectGenericRESTProcessor
   public static final PropertyDescriptor REST_API_URL_SUFFIX = new PropertyDescriptor
       .Builder().name("SObject REST API")
                 .description(
-                    "Salesforce REST API entry after /services/data/<version>.  This must always start with a forward slash (/).")
-                .addValidator(StandardValidators.createRegexMatchingValidator(Pattern.compile("^/.*")))
+                    "Salesforce REST API entry after /services/data/<version>.  This must never start with a forward slash (/).")
+                .addValidator(StandardValidators.createRegexMatchingValidator(Pattern.compile("^(?!/).*")))
                 .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
                 .required(true)
                 .build();

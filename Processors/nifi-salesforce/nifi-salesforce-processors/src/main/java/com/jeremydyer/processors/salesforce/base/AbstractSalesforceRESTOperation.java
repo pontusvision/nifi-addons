@@ -97,6 +97,15 @@ public class AbstractSalesforceRESTOperation
   }
 
   @Override
+  public void onPropertyModified(final PropertyDescriptor descriptor, final String oldValue, final String newValue)
+  {
+    sfAuthService = null;
+    baseURL = null;
+    apiVer = null;
+
+  }
+
+  @Override
   public Set<Relationship> getRelationships()
   {
     return this.relationships;
@@ -134,6 +143,12 @@ public class AbstractSalesforceRESTOperation
         sfAuthService.authenticate();
         url = generateSalesforceURL(context, flowFile);
         sendGet(url);
+      }
+
+      if (responseJson == null)
+      {
+
+        throw new Exception("Failed to receive data from the server; URL is " + url);
       }
 
       FlowFile ff = session.write(flowFile, outputStream -> outputStream.write(responseJson.getBytes()));
