@@ -59,11 +59,11 @@ public class SalesforceUserPassAuthenticationService
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
-            .defaultValue("https://test.salesforce.com/services/oauth2/token")
+            .defaultValue("https://login.salesforce.com/services/oauth2/token")
             .build();
 
     public static final PropertyDescriptor CLIENT_ID = new PropertyDescriptor
-            .Builder().name("Salesforce.com ClientID / Consumer Key")
+            .Builder().name("Salesforce.com ClientID (Consumer Key)")
             .description("The 'Consumer Key' from the connected app definition.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES    )
@@ -71,7 +71,7 @@ public class SalesforceUserPassAuthenticationService
             .build();
 
     public static final PropertyDescriptor CLIENT_SECRET = new PropertyDescriptor
-            .Builder().name("Salesforce.com ClientSecret / Consumer Secret")
+            .Builder().name("Salesforce.com ClientSecret (Consumer Secret)")
             .description("The 'Consumer Secret' from the connected app definition.")
             .required(true)
             .sensitive(true)
@@ -81,15 +81,21 @@ public class SalesforceUserPassAuthenticationService
 
     public static final PropertyDescriptor USERNAME = new PropertyDescriptor
             .Builder().name("Salesforce.com Username")
-            .description("End-user's username.  Note that this must be provided for Oauth2 to work with apps without user input.")
+            .description("End-user's username -- usually looks like an e-mail.  Note that this must be provided for Oauth2 to work with apps without user input.")
             .required(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor PASSWORD = new PropertyDescriptor
-            .Builder().name("Salesforce.com Password.  Note that this must be provided for Oauth2 to work with apps without user input")
-            .description("End-user's password.")
+            .Builder().name("Salesforce.com Password (plus security token appended).")
+            .description("End-user's password.   Note that this must be provided for Oauth2 to "+
+                "work with apps without user input.  You must append the user’s security " +
+                "token to their password A security token is an automatically-generated key " +
+                "from Salesforce. For example, if a user's password is mypassword, and their " +
+                "security token is XXXXXXXXXX, then the value provided for this parmeter must "+
+                "be mypasswordXXXXXXXXXX. For more information on security tokens see “Reset Your "+
+                "Security Token” in the online help.")
             .required(true)
             .sensitive(true)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)

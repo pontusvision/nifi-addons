@@ -73,7 +73,7 @@ public  class AbstractSalesforceRESTOperation
       .description("API Version")
       .required(true)
       .defaultValue(DEFAULT_SALESFORCE_VERSION)
-      .addValidator(StandardValidators.createURLorFileValidator())
+      .addValidator(StandardValidators.NON_BLANK_VALIDATOR)
       .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
       .build();
 
