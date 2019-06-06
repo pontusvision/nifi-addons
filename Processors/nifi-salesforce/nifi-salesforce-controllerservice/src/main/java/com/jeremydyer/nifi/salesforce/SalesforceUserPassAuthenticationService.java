@@ -35,6 +35,7 @@ import org.apache.nifi.annotation.lifecycle.OnEnabled;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.controller.AbstractControllerService;
 import org.apache.nifi.controller.ConfigurationContext;
+import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
 import org.apache.nifi.reporting.InitializationException;
@@ -57,41 +58,41 @@ public class SalesforceUserPassAuthenticationService
             .description("The URL for the authentication endpoint for Salesforce.com")
             .required(true)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .defaultValue("https://test.salesforce.com/services/oauth2/token")
             .build();
 
     public static final PropertyDescriptor CLIENT_ID = new PropertyDescriptor
-            .Builder().name("Salesforce.com ClientID")
+            .Builder().name("Salesforce.com ClientID / Consumer Key")
             .description("The 'Consumer Key' from the connected app definition.")
             .required(true)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES    )
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor CLIENT_SECRET = new PropertyDescriptor
-            .Builder().name("Salesforce.com ClientSecret")
+            .Builder().name("Salesforce.com ClientSecret / Consumer Secret")
             .description("The 'Consumer Secret' from the connected app definition.")
             .required(true)
             .sensitive(true)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor USERNAME = new PropertyDescriptor
             .Builder().name("Salesforce.com Username")
-            .description("End-user's username.")
+            .description("End-user's username.  Note that this must be provided for Oauth2 to work with apps without user input.")
             .required(true)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 
     public static final PropertyDescriptor PASSWORD = new PropertyDescriptor
-            .Builder().name("Salesforce.com Password")
+            .Builder().name("Salesforce.com Password.  Note that this must be provided for Oauth2 to work with apps without user input")
             .description("End-user's password.")
             .required(true)
             .sensitive(true)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 

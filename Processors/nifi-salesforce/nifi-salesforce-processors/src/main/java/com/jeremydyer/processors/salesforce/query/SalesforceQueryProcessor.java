@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.components.PropertyDescriptor;
+import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
@@ -53,62 +54,22 @@ public class SalesforceQueryProcessor
             .Builder().name("SOQL Query")
             .description("Salesforce.com SOQL that will be perform on the Salesforce.com instance.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(true)
             .build();
 
-    private List<PropertyDescriptor> descriptors;
+  @Override
+  protected String getEndPoint(ProcessContext context, FlowFile flowFile)
+  {
+    return SALESFORCE_OP + "/?q=" + context.getProperty(SOQL).evaluateAttributeExpressions().getValue();
+  }
 
-    private Set<Relationship> relationships;
+  @Override
+  protected void init(final ProcessorInitializationContext context) {
+    super.init(context);
+    final List<PropertyDescriptor> descriptors = new ArrayList<>(this.descriptors);
+    descriptors.add(SOQL);
+    this.descriptors = Collections.unmodifiableList(descriptors);
+  }
 
-    @Override
-    protected void init(final ProcessorInitializationContext context) {
-        final List<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>();
-        descriptors.add(SALESFORCE_AUTH_SERVICE);
-        descriptors.add(SOQL);
-        this.descriptors = Collections.unmodifiableList(descriptors);
-
-        final Set<Relationship> relationships = new HashSet<Relationship>();
-        relationships.add(REL_SUCCESS);
-        relationships.add(REL_FAILURE);
-        this.relationships = Collections.unmodifiableSet(relationships);
-    }
-
-    @Override
-    public Set<Relationship> getRelationships() {
-        return this.relationships;
-    }
-
-    @Override
-    public final List<PropertyDescriptor> getSupportedPropertyDescriptors() {
-        return descriptors;
-    }
-
-    @Override
-    public void onTrigger(final ProcessContext context, final ProcessSession session) throws ProcessException {
-        final FlowFile flowFile = session.get();
-        if ( flowFile == null ) {
-            return;
-        }
-
-        final SalesforceUserPassAuthentication sfAuthService = context.getProperty(SALESFORCE_AUTH_SERVICE)
-                .asControllerService(SalesforceUserPassAuthentication.class);
-
-        try {
-
-            String endpoint = SALESFORCE_OP + "/?q=" + context.getProperty(SOQL).evaluateAttributeExpressions().getValue();
-            final String responseJson = sendGet(sfAuthService.getSalesforceAccessToken(), RESPONSE_JSON, generateSalesforceURL(endpoint));
-
-            FlowFile ff = session.write(flowFile, new OutputStreamCallback() {
-                @Override
-                public void process(OutputStream outputStream) throws IOException {
-                    outputStream.write(responseJson.getBytes());
-                }
-            });
-            session.transfer(ff, REL_SUCCESS);
-        } catch (Exception ex) {
-            getLogger().error(ex.getMessage());
-            session.transfer(flowFile, REL_FAILURE);
-        }
-    }
 }

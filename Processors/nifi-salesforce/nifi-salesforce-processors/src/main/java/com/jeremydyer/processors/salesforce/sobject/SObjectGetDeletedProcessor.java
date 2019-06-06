@@ -29,6 +29,7 @@ import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.SeeAlso;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.components.PropertyDescriptor;
+import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
@@ -53,85 +54,44 @@ public class SObjectGetDeletedProcessor
     private static final String SALESFORCE_OP = "sobject";
 
     public static final PropertyDescriptor SOBJECT_NAME = new PropertyDescriptor
-            .Builder().name("SObject that will be interrogated for deleted records")
-            .description("Salesforce SObject name that we are looking for deleted objects for.")
+            .Builder().name("SObject that will be interrogated for the records")
+            .description("Salesforce SObject name that we are looking for.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(true)
             .build();
 
     public static final PropertyDescriptor START_DATE = new PropertyDescriptor
-            .Builder().name("SObject deleted start date")
-            .description("ISO 8601 formatted start date for looking for deleted records.")
+            .Builder().name("SObject start date")
+            .description("ISO 8601 formatted start date for looking for the records.")
             .required(true)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .build();
 
     public static final PropertyDescriptor END_DATE = new PropertyDescriptor
-            .Builder().name("SObject deleted end date")
-            .description("ISO 8601 formatted end date for looking for deleted records.")
+            .Builder().name("SObject end date")
+            .description("ISO 8601 formatted end date for looking for the records.")
             .required(true)
-            .expressionLanguageSupported(true)
+            .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .build();
-
-    private List<PropertyDescriptor> descriptors;
-
-    private Set<Relationship> relationships;
 
     @Override
     protected void init(final ProcessorInitializationContext context) {
-        final List<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>();
-        descriptors.add(SALESFORCE_AUTH_SERVICE);
+        super.init(context);
+        final List<PropertyDescriptor> descriptors = new ArrayList<>(this.descriptors);
         descriptors.add(SOBJECT_NAME);
         descriptors.add(START_DATE);
         descriptors.add(END_DATE);
         this.descriptors = Collections.unmodifiableList(descriptors);
-
-        final Set<Relationship> relationships = new HashSet<Relationship>();
-        relationships.add(REL_SUCCESS);
-        relationships.add(REL_FAILURE);
-        this.relationships = Collections.unmodifiableSet(relationships);
     }
 
     @Override
-    public Set<Relationship> getRelationships() {
-        return this.relationships;
+    protected String getEndPoint(ProcessContext context, FlowFile flowFile)
+    {
+        return SALESFORCE_OP + "/" + context.getProperty(SOBJECT_NAME).evaluateAttributeExpressions().getValue() + "/deleted/?start="
+            + context.getProperty(START_DATE).evaluateAttributeExpressions().getValue() + "&end=" + context.getProperty(END_DATE).evaluateAttributeExpressions().getValue();
+
     }
 
-    @Override
-    public final List<PropertyDescriptor> getSupportedPropertyDescriptors() {
-        return descriptors;
-    }
 
-    @Override
-    public void onTrigger(final ProcessContext context, final ProcessSession session) throws ProcessException {
-        final FlowFile flowFile = session.get();
-        if ( flowFile == null ) {
-            return;
-        }
-
-        final SalesforceUserPassAuthentication sfAuthService = context.getProperty(SALESFORCE_AUTH_SERVICE)
-                .asControllerService(SalesforceUserPassAuthentication.class);
-
-
-        try {
-
-            String endpoint = SALESFORCE_OP + "/" + context.getProperty(SOBJECT_NAME).evaluateAttributeExpressions().getValue() + "/deleted/?start="
-                    + context.getProperty(START_DATE).evaluateAttributeExpressions().getValue() + "&end=" + context.getProperty(END_DATE).evaluateAttributeExpressions().getValue();
-
-
-            final String responseJson = sendGet(sfAuthService.getSalesforceAccessToken(), RESPONSE_JSON, generateSalesforceURL(endpoint));
-
-            FlowFile ff = session.write(flowFile, new OutputStreamCallback() {
-                @Override
-                public void process(OutputStream outputStream) throws IOException {
-                    outputStream.write(responseJson.getBytes());
-                }
-            });
-            session.transfer(ff, REL_SUCCESS);
-        } catch (Exception ex) {
-            getLogger().error(ex.getMessage());
-            session.transfer(flowFile, REL_FAILURE);
-        }
-    }
 }
