@@ -23,3 +23,4 @@ com.jeremydyer.processors.salesforce.sobject.SObjectGetDeletedProcessor
 com.jeremydyer.processors.salesforce.sobject.SObjectGetUpdatedProcessor
 com.jeremydyer.processors.salesforce.sobject.SObjectRowsProcessor
 com.jeremydyer.processors.salesforce.query.SalesforceQueryProcessor
+com.jeremydyer.processors.salesforce.sobject.SObjectGenericRESTProcessor
