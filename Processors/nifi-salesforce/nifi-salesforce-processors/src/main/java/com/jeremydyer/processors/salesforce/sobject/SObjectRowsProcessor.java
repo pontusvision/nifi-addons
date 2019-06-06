@@ -50,8 +50,8 @@ public class SObjectRowsProcessor
     private static final String SALESFORCE_OP = "sobjects";
 
     public static final PropertyDescriptor SOBJECT_NAME = new PropertyDescriptor
-            .Builder().name("SObject that will be interrogated for deleted records")
-            .description("Salesforce SObject name that we are looking for deleted objects for.")
+            .Builder().name("SObject that will be interrogated for records")
+            .description("Salesforce SObject name that we are looking for.")
             .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
             .required(true)

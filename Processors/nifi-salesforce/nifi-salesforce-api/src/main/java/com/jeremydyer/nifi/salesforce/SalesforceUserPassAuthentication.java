@@ -20,11 +20,17 @@ import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.controller.ControllerService;
 import org.apache.nifi.processor.exception.ProcessException;
+import org.apache.nifi.reporting.InitializationException;
 
-@Tags({"example"})
-@CapabilityDescription("Example Service API.")
-public interface SalesforceUserPassAuthentication extends ControllerService {
+@Tags({ "Salesforce.com UserPass OAUTH2 Authentication Controller Service" })
+@CapabilityDescription("OAUTH2 authentication for Salesforce.com (see https://developer.salesforce.com/docs/atlas.en-us.218.0.api_rest.meta/api_rest/intro_understanding_username_password_oauth_flow.htm).")
+public interface SalesforceUserPassAuthentication extends ControllerService
+{
 
-    public String getSalesforceAccessToken() throws ProcessException;
+  public String getSalesforceAccessToken() throws ProcessException;
+
+  public String getResponseAttrib(String attrib) throws ProcessException;
+
+  public void authenticate() throws InitializationException;
 
 }
