@@ -37,6 +37,12 @@
             <artifactId>nifi-salesforce-controllerservice</artifactId>
             <version>1.9.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.jdye64</groupId>
+            <artifactId>nifi-salesforce-api</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>
