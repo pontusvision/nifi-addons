@@ -30,6 +30,7 @@
     <properties>
         <cometd.version>2.2.0</cometd.version>
         <json.version>20180813</json.version>
+        <force-rest-api.version>0.0.46</force-rest-api.version>
         <!--<cometd.version>3.0.9</cometd.version>-->
     </properties>
 
@@ -56,6 +57,11 @@
             <!--<version>46.1.0</version>-->
         <!--</dependency>-->
 
+        <dependency>
+            <groupId>com.frejo</groupId>
+            <artifactId>force-rest-api</artifactId>
+            <version>${force-rest-api.version}</version>
+        </dependency>
         <!-- CometD dependencies -->
         <dependency>
             <groupId>org.cometd.java</groupId>
